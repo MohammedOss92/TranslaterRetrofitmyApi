@@ -3,11 +3,13 @@ package com.sarrawi.mytranslate
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -106,6 +108,21 @@ class TranslateFragment : Fragment() {
             }
         }
 
+        binding.shareButton.setOnClickListener {
+            val textToShare = binding.translatedText.text.toString()
+            if (textToShare.isNotEmpty()) {
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, textToShare)
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(shareIntent, "مشاركة الترجمة عبر"))
+            } else {
+                Toast.makeText(requireContext(), "لا يوجد نص لمشاركته", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
         // إعداد النطق بناءً على اللغة المختارة
         binding.speakButton.setOnClickListener {
             val text = binding.translatedText.text.toString()
@@ -122,6 +139,31 @@ class TranslateFragment : Fragment() {
                 tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
             }
         }
+
+        val swapAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate)
+
+        binding.swapLanguagesButton.setOnClickListener {
+            it.startAnimation(swapAnimation)
+
+            val sourcePosition = binding.sourceLanguageSpinner.selectedItemPosition
+            val targetPosition = binding.targetLanguageSpinner.selectedItemPosition
+
+            binding.sourceLanguageSpinner.setSelection(targetPosition)
+            binding.targetLanguageSpinner.setSelection(sourcePosition)
+        }
+
+        binding.pasteButton.setOnClickListener {
+            val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipData = clipboard.primaryClip
+            if (clipData != null && clipData.itemCount > 0) {
+                val pasteText = clipData.getItemAt(0).text.toString()
+                binding.inputText.setText(pasteText)
+                Toast.makeText(requireContext(), "تم لصق النص", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "لا يوجد نص في الحافظة", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     override fun onDestroyView() {
