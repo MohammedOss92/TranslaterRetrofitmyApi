@@ -10,5 +10,8 @@ interface ApiService {
     @POST("api/translate/")
     fun translateText(
         @Body request: TranslateRequest
-    ): Response<TranslateResponse>
+    ): Call<TranslateResponse>
+
+    @POST("api/translate/")
+    suspend fun translateText2(@Body request: TranslateRequest): Response<TranslateResponse>
 }
