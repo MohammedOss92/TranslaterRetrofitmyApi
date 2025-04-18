@@ -2,19 +2,27 @@ package com.sarrawi.mytranslate.repo
 
 import android.util.Log
 import com.sarrawi.mytranslate.api.ApiService
+import com.sarrawi.mytranslate.dao.HistoryDao
+import com.sarrawi.mytranslate.model.History
 import com.sarrawi.mytranslate.model.TranslateRequest
 import com.sarrawi.mytranslate.model.TranslateResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class TranslationRepository(private val apiService: ApiService) {
+class TranslationRepository(private val apiService: ApiService, private val historyDao: HistoryDao) {
 
     fun translateTextResponse(request: TranslateRequest, callback: (TranslateResponse?) -> Unit) {
         apiService.translateText(request).enqueue(object : Callback<TranslateResponse> {
             override fun onResponse(call: Call<TranslateResponse>, response: Response<TranslateResponse>) {
                 if (response.isSuccessful) {
+                    val translatedText = response.body()?.translated_text
                     callback(response.body())  // إعادة النتيجة في حالة النجاح
+
+                    translatedText?.let {
+                        val history = History(word = request.source_text, meaning = it)
+                        historyDao.insertHistory(history)
+                    }
                 } else {
                     callback(null)  // في حالة الفشل
                 }

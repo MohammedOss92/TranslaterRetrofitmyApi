@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.sarrawi.mytranslate.api.RetrofitClient
+import com.sarrawi.mytranslate.database.AppDatabase
 import com.sarrawi.mytranslate.databinding.FragmentTranslateBinding
 import com.sarrawi.mytranslate.model.TranslateRequest
 import com.sarrawi.mytranslate.repo.TranslationRepository
@@ -44,7 +45,13 @@ class TranslateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repository = TranslationRepository(RetrofitClient.apiService)
+        // الحصول على قاعدة البيانات
+        val db = AppDatabase.getDatabase(requireContext())
+
+        // الحصول على DAO من قاعدة البيانات
+        val historyDao = db.historyDao()
+
+        val repository = TranslationRepository(RetrofitClient.apiService, historyDao)
         viewModel = Translate_VM(repository)
 
         // تهيئة النطق
@@ -137,6 +144,8 @@ class TranslateFragment : Fragment() {
                     tts.language = Locale("en") // إذا كانت اللغة غير مدعومة، استخدم الإنجليزية
                 }
                 tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+            }else{
+                binding.speakButton.isEnabled=false
             }
         }
 
