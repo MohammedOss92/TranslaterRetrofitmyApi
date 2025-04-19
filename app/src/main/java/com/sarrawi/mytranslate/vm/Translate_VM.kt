@@ -3,6 +3,7 @@ package com.sarrawi.mytranslate.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sarrawi.mytranslate.model.History
 import com.sarrawi.mytranslate.model.TranslateRequest
 import com.sarrawi.mytranslate.model.TranslateResponse
 import com.sarrawi.mytranslate.repo.TranslationRepository
@@ -10,20 +11,16 @@ import kotlinx.coroutines.launch
 
 class Translate_VM(private val translationRepository: TranslationRepository): ViewModel() {
 
-
-    fun translate_vm(request: TranslateRequest) {
-        Log.d("Translate", "Starting translation for: $request")
-        translationRepository.translateTextResponse(request) { result ->
-            if (result != null) {
-                Log.d("Translate", "Translation successful: ${result.translated_text}")
-                // هنا يمكنك استخدام `result.translated_text` لعرض الترجمة
-            } else {
-                Log.e("Translate", "Translation failed")
-            }
-        }
+    fun translate_vm2(request: TranslateRequest, onResult: (TranslateResponse?) -> Unit) {
+        translationRepository.translateTextResponse(request, onResult)
     }
 
-    fun translate_vm2(request: TranslateRequest, onResult: (TranslateResponse?) -> Unit) {
+    fun deleteHistory(history: History) = viewModelScope.launch {
+        translationRepository.delete(history)
+    }
+
+
+    fun translate_vm22(request: TranslateRequest, onResult: (TranslateResponse?) -> Unit) {
         Log.d("Translate", "Starting translation for: $request")
 
         viewModelScope.launch {
@@ -37,6 +34,20 @@ class Translate_VM(private val translationRepository: TranslationRepository): Vi
             onResult(result)
         }
     }
+
+    fun translate_vm(request: TranslateRequest) {
+        Log.d("Translate", "Starting translation for: $request")
+        translationRepository.translateTextResponse(request) { result ->
+            if (result != null) {
+                Log.d("Translate", "Translation successful: ${result.translated_text}")
+                // هنا يمكنك استخدام `result.translated_text` لعرض الترجمة
+            } else {
+                Log.e("Translate", "Translation failed")
+            }
+        }
+    }
+
+
 
 //    fun trasnslate_vm(request: TranslateRequest) {
 //        viewModelScope.launch {

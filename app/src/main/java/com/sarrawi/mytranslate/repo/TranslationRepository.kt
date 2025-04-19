@@ -6,6 +6,9 @@ import com.sarrawi.mytranslate.dao.HistoryDao
 import com.sarrawi.mytranslate.model.History
 import com.sarrawi.mytranslate.model.TranslateRequest
 import com.sarrawi.mytranslate.model.TranslateResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,9 +23,19 @@ class TranslationRepository(private val apiService: ApiService, private val hist
                     callback(response.body())  // إعادة النتيجة في حالة النجاح
 
                     translatedText?.let {
-                        val history = History(word = request.source_text, meaning = it)
-                        historyDao.insertHistory(history)
+                        val history = History(word = request.source_text, meaning = it,
+                            sourceLang = request.source_language,
+                            targetLang = request.target_language)
+                        // نحفظها في الخلفية
+                        CoroutineScope(Dispatchers.IO).launch {
+                            historyDao.insertHistory(history)
+                        }
                     }
+
+//                    translatedText?.let {
+//                        val history = History(word = request.source_text, meaning = it)
+//                        historyDao.insertHistory(history)
+//                    }
                 } else {
                     callback(null)  // في حالة الفشل
                 }
@@ -47,6 +60,11 @@ class TranslationRepository(private val apiService: ApiService, private val hist
             Log.e("Translate", "Exception: ${e.message}")
             null
         }
+    }
+
+
+    suspend fun delete(history: History) {
+        historyDao.delete(history)
     }
 
 
