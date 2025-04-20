@@ -3,26 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/historyFragment">
 
-    <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.sarrawi.mytranslate.TranslateFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
-
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.sarrawi.mytranslate.SecondFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_translate">
-
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_translate"/>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.sarrawi.mytranslate.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/translateFragment"
+        android:name="com.sarrawi.mytranslate.TranslateFragment"
+        android:label="TranslateFragment" />
+    <fragment
+        android:id="@+id/translateCameraFragment"
+        android:name="com.sarrawi.mytranslate.TranslateCameraFragment"
+        android:label="TranslateCameraFragment" />
 </navigation>

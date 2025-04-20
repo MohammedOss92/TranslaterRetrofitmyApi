@@ -130,7 +130,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline250"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -201,6 +206,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline75"
         app:layout_constraintTop_toBottomOf="@id/translatedText" />
+
+    <ImageButton
+        android:id="@+id/clearButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="#F44336"
+        android:contentDescription="حذف"
+        android:minHeight="48dp"
+        android:padding="8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_clear"
+        app:layout_constraintEnd_toStartOf="@id/guideline250"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/translatedText"
+        android:visibility="gone"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

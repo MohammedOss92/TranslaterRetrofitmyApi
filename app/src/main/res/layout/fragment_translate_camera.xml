@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/sourceLanguageSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/targetLanguageSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+
+        <EditText
+            android:id="@+id/inputText"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="top"
+            android:hint="أدخل أو الصق النص هنا"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginTop="12dp"/>
+
+        <Button
+            android:id="@+id/selectImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📷 اختر صورة لاستخراج النص"
+            android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/captureImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📸 التقاط صورة بالكاميرا"
+            android:layout_marginTop="8dp"/>
+
+
+        <Button
+            android:id="@+id/translateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ترجم النص"
+            android:layout_marginTop="12dp"/>
+
+        <EditText
+            android:id="@+id/translatedText"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="top"
+            android:hint="النص المترجم"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginTop="12dp"/>
+    </LinearLayout>
+</ScrollView>
