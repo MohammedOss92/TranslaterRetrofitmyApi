@@ -48,12 +48,15 @@ class HistoryFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             this.adapter = this@HistoryFragment.adapter
         }
-
-
-        lifecycleScope.launch {
-            val history = historyDao.getAllHistory()
-            adapter.submitList(history)
+        viewModel.allHistory.observe(viewLifecycleOwner) { historyList ->
+            adapter.submitList(historyList) // تأكد إنك تستخدم AsyncListDiffer أو ListAdapter
         }
+
+
+//        lifecycleScope.launch {
+//            val history = historyDao.getAllHistory()
+//            adapter.submitList(history)
+//        }
 
         adapter.onClick= { historyItem,pos ->
             viewModel.deleteHistory(historyItem)

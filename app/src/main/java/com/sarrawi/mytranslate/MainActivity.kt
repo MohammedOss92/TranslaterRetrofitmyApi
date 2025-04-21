@@ -28,12 +28,20 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
+// إخفاء اسم التطبيق من الـ Toolbar
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
+
+        appBarConfiguration = AppBarConfiguration.Builder(R.id.translateFragment, R.id.historyFragment)
+             // إذا كنت تستخدم درج التنقل
+            .build()
         setupActionBarWithNavController(navController, appBarConfiguration)
 
 
-        val options = listOf("Translate", "History","Camera")
+//        val options = listOf("Translate", "History","Camera")
+        val options = listOf("Translate", "History")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
@@ -49,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                 when (position) {
                     0 -> navController.navigate(R.id.translateFragment)
                     1 -> navController.navigate(R.id.historyFragment)
-                    2 -> navController.navigate(R.id.translateCameraFragment)
+                    //2 -> navController.navigate(R.id.translateCameraFragment)
                 }
             }
 
@@ -69,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -1,6 +1,7 @@
 package com.sarrawi.mytranslate.repo
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.sarrawi.mytranslate.api.ApiService
 import com.sarrawi.mytranslate.dao.HistoryDao
 import com.sarrawi.mytranslate.model.History
@@ -62,6 +63,8 @@ class TranslationRepository(private val apiService: ApiService, private val hist
         }
     }
 
+
+    fun getAllHistory(): LiveData<List<History>> = historyDao.getAllHistory()
 
     suspend fun delete(history: History) {
         historyDao.delete(history)

@@ -1,6 +1,7 @@
 package com.sarrawi.mytranslate.vm
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarrawi.mytranslate.model.History
@@ -19,6 +20,7 @@ class Translate_VM(private val translationRepository: TranslationRepository): Vi
         translationRepository.delete(history)
     }
 
+    val allHistory: LiveData<List<History>> = translationRepository.getAllHistory()
 
     fun translate_vm22(request: TranslateRequest, onResult: (TranslateResponse?) -> Unit) {
         Log.d("Translate", "Starting translation for: $request")

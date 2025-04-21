@@ -19,6 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
 
+            android:minHeight="32dp"
             app:layout_constraintBottom_toTopOf="@+id/nav_host_fragment_content_main"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
