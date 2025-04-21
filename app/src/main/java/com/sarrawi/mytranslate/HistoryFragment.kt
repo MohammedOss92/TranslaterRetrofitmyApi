@@ -57,6 +57,7 @@ class HistoryFragment : Fragment() {
 
         adapter.onClick= { historyItem,pos ->
             viewModel.deleteHistory(historyItem)
+            adapter.notifyDataSetChanged()
         }
     }
 

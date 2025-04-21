@@ -1,9 +1,14 @@
 package com.sarrawi.mytranslate
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.text.Editable
@@ -13,8 +18,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.sarrawi.mytranslate.api.RetrofitClient
 import com.sarrawi.mytranslate.database.AppDatabase
 import com.sarrawi.mytranslate.databinding.FragmentTranslateBinding
@@ -36,7 +47,9 @@ class TranslateFragment : Fragment() {
 
     private lateinit var tts: TextToSpeech
 
-
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { processImageFromUri(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,6 +125,7 @@ class TranslateFragment : Fragment() {
         binding.inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 binding.clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                binding.translateButton.isEnabled = true
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -189,6 +203,20 @@ class TranslateFragment : Fragment() {
             }
         }
 
+    binding.camButton.setOnClickListener {
+
+        if (allPermissionsGranted()) {
+            pickImage.launch("image/*")
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE),
+                101
+            )
+        }
+    }
+
+
     binding.clearButton.setOnClickListener {
         binding.inputText.text.clear()
         binding.translatedText.text.clear()
@@ -202,9 +230,39 @@ class TranslateFragment : Fragment() {
         _binding = null
     }
 
+    private fun processImageFromUri(uri: Uri) {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        recognizeText(bitmap)
+    }
+
+    private fun recognizeText(bitmap: Bitmap) {
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                binding.inputText.setText(visionText.text)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "فشل في قراءة النص", Toast.LENGTH_SHORT).show()
+            }
+    }
+
     // دالة للحصول على رمز اللغة بناءً على اسم اللغة
     private fun getLanguageCode(languageName: String): String {
         return LanguageCodes.languages.entries.firstOrNull { it.value == languageName }?.key ?: "en"
+    }
+
+    private fun allPermissionsGranted(): Boolean {
+        val permissions = arrayOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        return permissions.all {
+            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+        }
     }
 }
 

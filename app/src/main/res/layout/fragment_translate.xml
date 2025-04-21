@@ -83,6 +83,24 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.25" />
+
+
+
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline75"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
     <!-- زر لصق -->
     <ImageButton
         android:id="@+id/pasteButton"
@@ -100,6 +118,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/inputText" />
 
+    <ImageButton
+        android:id="@+id/camButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:backgroundTint="#4CAF50"
+        android:contentDescription="لصق"
+        android:minHeight="48dp"
+        android:padding="8dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_img"
+        app:layout_constraintEnd_toStartOf="@id/guideline50"
+        app:layout_constraintStart_toStartOf="@id/guideline25"
+        app:layout_constraintTop_toBottomOf="@id/inputText" />
+
     <!-- زر الترجمة -->
     <Button
         android:id="@+id/translateButton"
@@ -109,6 +143,7 @@
         android:backgroundTint="#2196F3"
         android:textColor="#FFFFFF"
         android:layout_marginTop="16dp"
+        android:enabled="false"
         app:layout_constraintTop_toBottomOf="@id/pasteButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -130,27 +165,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"/>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline250"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25" />
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline50"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline75"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75" />
 
 
 
@@ -219,7 +234,7 @@
         android:padding="8dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_clear"
-        app:layout_constraintEnd_toStartOf="@id/guideline250"
+        app:layout_constraintEnd_toStartOf="@id/guideline25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/translatedText"
         android:visibility="gone"/>

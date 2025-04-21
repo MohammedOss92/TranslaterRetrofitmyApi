@@ -24,6 +24,7 @@ class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.His
             binding.deleteButton.setOnClickListener {
 
                 onClick?.invoke(item, adapterPosition)
+                notifyDataSetChanged()
                 notifyItemChanged(adapterPosition)
             }
         }
