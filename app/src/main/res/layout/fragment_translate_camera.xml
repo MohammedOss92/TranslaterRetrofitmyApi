@@ -1,62 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:padding="16dp"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Spinner
-            android:id="@+id/sourceLanguageSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Spinner
-            android:id="@+id/targetLanguageSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
-
-        <EditText
-            android:id="@+id/inputText"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:gravity="top"
-            android:hint="أدخل أو الصق النص هنا"
-            android:background="@android:drawable/edit_text"
-            android:layout_marginTop="12dp"/>
+        android:layout_height="wrap_content"
+        android:gravity="center">
 
         <Button
-            android:id="@+id/selectImageButton"
-            android:layout_width="match_parent"
+            android:id="@+id/captureBtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="📷 اختر صورة لاستخراج النص"
-            android:layout_marginTop="8dp"/>
-        <Button
-            android:id="@+id/captureImageButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📸 التقاط صورة بالكاميرا"
-            android:layout_marginTop="8dp"/>
-
+            android:text="التقاط صورة" />
 
         <Button
-            android:id="@+id/translateButton"
-            android:layout_width="match_parent"
+            android:id="@+id/selectImageBtn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ترجم النص"
-            android:layout_marginTop="12dp"/>
-
-        <EditText
-            android:id="@+id/translatedText"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:gravity="top"
-            android:hint="النص المترجم"
-            android:background="@android:drawable/edit_text"
-            android:layout_marginTop="12dp"/>
+            android:layout_marginStart="16dp"
+            android:text="اختيار من المعرض" />
     </LinearLayout>
-</ScrollView>
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="النص المستخرج"
+        android:minHeight="48dp" />
+</LinearLayout>
