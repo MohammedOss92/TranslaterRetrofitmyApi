@@ -42,6 +42,11 @@ class MainActivity : AppCompatActivity() {
 
 //        val options = listOf("Translate", "History","Camera")
         val options = listOf("Translate", "History")
+//        val options = listOf(
+//            Pair(R.drawable.ic_clear, "Home"),
+//            Pair(R.drawable.ic_clear, "Favorites"),
+//            Pair(R.drawable.ic_clear, "Settings")
+//        )
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
