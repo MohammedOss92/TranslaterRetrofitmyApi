@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/translateFragment">
+    app:startDestination="@id/splashScreenFragment">
 
 <!--    <fragment-->
 <!--        android:id="@+id/SecondFragment"-->
@@ -18,7 +18,16 @@
         android:id="@+id/translateFragment"
         android:name="com.sarrawi.mytranslate.TranslateFragment"
  />
-<!--    <fragment-->
+    <fragment
+        android:id="@+id/splashScreenFragment"
+        android:name="com.sarrawi.mytranslate.SplashScreenFragment"
+        android:label="fragment_splash_screen"
+        tools:layout="@layout/fragment_splash_screen" >
+        <action
+            android:id="@+id/action_splashScreenFragment_to_translateFragment"
+            app:destination="@id/translateFragment" />
+    </fragment>
+    <!--    <fragment-->
 <!--        android:id="@+id/translateCameraFragment"-->
 <!--        android:name="com.sarrawi.mytranslate.TranslateCameraFragment"-->
 <!-- />-->
