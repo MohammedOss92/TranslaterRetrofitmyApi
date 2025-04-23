@@ -115,17 +115,18 @@ class TranslateFragment : Fragment() {
 
             viewModel.translate_vm2(request) { result ->
                 if (result != null) {
-                    binding.translatedText.visibility
-                    binding.speakButton.visibility
-                    binding.shareButton.visibility
-                    binding.copyButton.visibility
+
 
                     binding.translatedText.setText(result.translated_text)
-
+                    binding.translatedText.visibility = View.VISIBLE
+                    binding.speakButton.visibility = View.VISIBLE
+                    binding.shareButton.visibility = View.VISIBLE
+                    binding.copyButton.visibility = View.VISIBLE
                 } else {
                     Toast.makeText(requireContext(), "فشل في الترجمة", Toast.LENGTH_SHORT).show()
                 }
             }
+
         }
 
         binding.inputText.addTextChangedListener(object : TextWatcher {
