@@ -79,7 +79,7 @@ class TranslateFragment : Fragment() {
             }
         }
 
-
+//jhjhj
 
 
     // إعداد الـ Spinners مع جميع اللغات
