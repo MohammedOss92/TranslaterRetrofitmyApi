@@ -70,6 +70,7 @@ class TranslateFragment : Fragment() {
     }
     //
 
+    private lateinit var textToTranslate: String
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { processImageFromUri(it) }
@@ -85,6 +86,11 @@ class TranslateFragment : Fragment() {
 //
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+    textToTranslate = arguments?.getString("textToTranslate") ?: ""
+
+    // ضع النص داخل EditText
+    binding.inputText.setText(textToTranslate)
 
         // الحصول على قاعدة البيانات
         val db = AppDatabase.getDatabase(requireContext())

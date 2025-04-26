@@ -17,6 +17,10 @@
         <action
             android:id="@+id/action_translateFragment_to_previewFragment"
             app:destination="@id/previewFragment" />
+
+        <argument
+            android:name="textToTranslate"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/splashScreenFragment"
@@ -35,6 +39,9 @@
     <argument
         android:name="imageUri"
         app:argType="string" />
+        <action
+            android:id="@+id/action_previewFragment_to_translateFragment"
+            app:destination="@id/translateFragment" />
     </fragment>
 
 </navigation>
