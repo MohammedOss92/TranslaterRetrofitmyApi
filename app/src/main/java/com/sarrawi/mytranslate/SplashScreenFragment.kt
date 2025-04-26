@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
@@ -15,7 +16,7 @@ import com.sarrawi.mytranslate.databinding.FragmentSplashScreenBinding
 
 class SplashScreenFragment : Fragment() {
 
-    private lateinit var _binding : FragmentSplashScreenBinding
+    private lateinit var _binding: FragmentSplashScreenBinding
     private val binding get() = _binding
 
     override fun onCreateView(
@@ -33,16 +34,21 @@ class SplashScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Handler(Looper.myLooper()!!).postDelayed({
-//            val direction = SplashFragmentDirections.actionSplashFragmentToFirsFragment()
-//            findNavController().navigate(direction)
-            findNavController()
-                .navigate(R.id.action_splashScreenFragment_to_translateFragment,
+        val img=view.findViewById<ImageView>(R.id.imageView2)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            val navController = findNavController()
+
+            if (isAdded && navController.currentDestination?.id == R.id.splashScreenFragment) {
+                navController.navigate(
+                    R.id.action_splashScreenFragment_to_translateFragment,
                     null,
                     NavOptions.Builder()
-                        .setPopUpTo(R.id.splashScreenFragment,
-                            true).build()
+                        .setPopUpTo(R.id.splashScreenFragment, true)
+                        .build()
                 )
-        },5000)
+            }
+
+        }, 5000)
     }
 }

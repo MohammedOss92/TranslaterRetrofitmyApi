@@ -13,7 +13,9 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import com.sarrawi.mytranslate.adapter.SpinnerAdapter
 import com.sarrawi.mytranslate.databinding.ActivityMainBinding
+import com.sarrawi.mytranslate.model.Item
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        appBarConfiguration = AppBarConfiguration.Builder(R.id.translateFragment, R.id.historyFragment)
+        appBarConfiguration = AppBarConfiguration.Builder(R.id.translateFragment, R.id.historyFragment,R.id.splashScreenFragment)
              // إذا كنت تستخدم درج التنقل
             .build()
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -49,6 +51,15 @@ class MainActivity : AppCompatActivity() {
 //        )
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+//        val options = listOf(
+//            Item("Translate"),
+//            Item("History")
+//        )
+//
+//        val spinner = findViewById<Spinner>(R.id.spinner_fragment)
+//        val adapter = SpinnerAdapter(this, options)
+//        spinner.adapter = adapter
 
 
         val spinnerFragment = findViewById<Spinner>(R.id.spinner_fragment)

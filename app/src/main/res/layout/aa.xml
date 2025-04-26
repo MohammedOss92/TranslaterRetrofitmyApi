@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <!-- EditText مع مساحة padding لليمين حتى ما يغطيه الزر -->
+<!--    <EditText-->
+<!--        android:id="@+id/editTextMessage"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:hint="اكتب رسالة"-->
+<!--        android:paddingEnd="50dp"-->
+<!--        android:background="@drawable/edit_text_background"-->
+<!--        android:layout_gravity="center_vertical"-->
+<!--        android:padding="12dp" />-->
+
+<!--    &lt;!&ndash; الزر داخل حدود الـ EditText من اليمين &ndash;&gt;-->
+<!--    <ImageButton-->
+<!--        android:id="@+id/sendButton"-->
+<!--        android:layout_width="36dp"-->
+<!--        android:layout_height="36dp"-->
+<!--        android:layout_gravity="end|center_vertical"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:background="@android:color/transparent"-->
+<!--        android:src="@android:drawable/ic_menu_send"-->
+<!--        android:contentDescription="Send" />-->
+</FrameLayout>

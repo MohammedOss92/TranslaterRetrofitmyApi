@@ -10,7 +10,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -19,10 +21,14 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -36,6 +42,7 @@ import com.sarrawi.mytranslate.vm.Translate_VM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.*
 //
 class TranslateFragment : Fragment() {
@@ -46,6 +53,23 @@ class TranslateFragment : Fragment() {
     private lateinit var viewModel: Translate_VM
 
     private lateinit var tts: TextToSpeech
+    private var isSpeaking = false
+
+    //cam
+    private lateinit var imageUri: Uri
+    companion object {
+        const val CAMERA_REQUEST_CODE = 1001
+        const val GALLERY_REQUEST_CODE = 1002
+    }
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            // Passing URI as an argument to the PreviewFragment
+            val action = TranslateFragmentDirections.actionTranslateFragmentToPreviewFragment(it.toString())
+            findNavController().navigate(action)
+        }
+    }
+    //
+
 
     private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { processImageFromUri(it) }
@@ -167,24 +191,80 @@ class TranslateFragment : Fragment() {
         }
 
 
-        // إعداد النطق بناءً على اللغة المختارة
-        binding.speakButton.setOnClickListener {
-            val text = binding.translatedText.text.toString()
-            if (text.isNotEmpty()) {
-                val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
-                val langCode = getLanguageCode(targetLangName)
-                val locale = Locale(langCode)
 
-                if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
-                    tts.language = locale
-                } else {
-                    tts.language = Locale("en") // إذا كانت اللغة غير مدعومة، استخدم الإنجليزية
-                }
-                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
-            }else{
-                binding.speakButton.isEnabled=false
+
+// الاستماع لانتهاء النطق
+    tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+        override fun onStart(utteranceId: String?) {
+            isSpeaking = true
+            requireActivity().runOnUiThread {
+                binding.speakButton.setImageResource(R.drawable.ic_paus)
             }
         }
+
+        override fun onDone(utteranceId: String?) {
+            isSpeaking = false
+            requireActivity().runOnUiThread {
+                binding.speakButton.setImageResource(R.drawable.ic_volume)
+            }
+        }
+
+        override fun onError(utteranceId: String?) {
+            isSpeaking = false
+            requireActivity().runOnUiThread {
+                binding.speakButton.setImageResource(R.drawable.ic_volume)
+            }
+        }
+    })
+
+
+    binding.speakButton.setOnClickListener {
+        val text = binding.translatedText.text.toString()
+
+        if (isSpeaking) {
+            tts.stop()
+            binding.speakButton.setImageResource(R.drawable.ic_volume)
+            isSpeaking = false
+            return@setOnClickListener
+        }
+
+        if (text.isNotEmpty()) {
+            val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
+            val langCode = getLanguageCode(targetLangName)
+            val locale = Locale(langCode)
+
+            tts.language = if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+                locale
+            } else {
+                Locale("en")
+            }
+
+            val params = Bundle()
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
+        } else {
+            binding.speakButton.isEnabled = false
+        }
+    }
+
+
+    // إعداد النطق بناءً على اللغة المختارة
+//        binding.speakButton.setOnClickListener {
+//            val text = binding.translatedText.text.toString()
+//            if (text.isNotEmpty()) {
+//                val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
+//                val langCode = getLanguageCode(targetLangName)
+//                val locale = Locale(langCode)
+//
+//                if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+//                    tts.language = locale
+//                } else {
+//                    tts.language = Locale("en") // إذا كانت اللغة غير مدعومة، استخدم الإنجليزية
+//                }
+//                tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+//            }else{
+//                binding.speakButton.isEnabled=false
+//            }
+//        }
 
         val swapAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate)
 
@@ -210,17 +290,22 @@ class TranslateFragment : Fragment() {
             }
         }
 
-    binding.camButton.setOnClickListener {
+//    binding.camButton.setOnClickListener {
+//
+//        if (allPermissionsGranted()) {
+//            pickImage.launch("image/*")
+//        } else {
+//            ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE),
+//                101
+//            )
+//        }
+//    }
 
-        if (allPermissionsGranted()) {
-            pickImage.launch("image/*")
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE),
-                101
-            )
-        }
+    //cam
+    binding.camButton.setOnClickListener {
+        showImageSourceDialog()
     }
 
 
@@ -277,6 +362,88 @@ class TranslateFragment : Fragment() {
             ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
         }
     }
+
+    /////cam
+//    private fun showImageSourceDialog() {
+//        val options = arrayOf("التقاط صورة", "تحميل من المعرض")
+//        AlertDialog.Builder(requireContext())
+//            .setTitle("اختر مصدر الصورة")
+//            .setItems(options) { _, which ->
+//                when (which) {
+//                    0 -> openCamera()
+//                    1 -> pickImageLauncher.launch("image/*")
+//                }
+//            }
+//            .show()
+//    }
+//    private fun openCamera() {
+//        val imageFile = File.createTempFile("IMG_", ".jpg", requireContext().cacheDir)
+//        imageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", imageFile)
+//
+//        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+//        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+//    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == AppCompatActivity.RESULT_OK) {
+            when (requestCode) {
+                CAMERA_REQUEST_CODE -> {
+                    // Passing URI to PreviewFragment
+                    val action = TranslateFragmentDirections.actionTranslateFragmentToPreviewFragment(imageUri.toString())
+                    findNavController().navigate(action)
+                }
+            }
+        }
+    }
+
+
+
+
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            openCamera()
+        } else {
+            Toast.makeText(requireContext(), "يجب السماح باستخدام الكاميرا", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showImageSourceDialog() {
+        val options = arrayOf("التقاط صورة", "تحميل من المعرض")
+        AlertDialog.Builder(requireContext())
+            .setTitle("اختر مصدر الصورة")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> checkCameraPermissionAndOpenCamera()
+                    1 -> pickImageLauncher.launch("image/*")
+                }
+            }
+            .show()
+    }
+
+    private fun checkCameraPermissionAndOpenCamera() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(), android.Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            openCamera()
+        } else {
+            // نطلب الصلاحية
+            requestCameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+        }
+    }
+
+    private fun openCamera() {
+        val imageFile = File.createTempFile("IMG_", ".jpg", requireContext().cacheDir)
+        imageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", imageFile)
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
 }
 
 

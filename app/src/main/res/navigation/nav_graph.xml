@@ -5,11 +5,7 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/splashScreenFragment">
 
-<!--    <fragment-->
-<!--        android:id="@+id/SecondFragment"-->
-<!--        android:name="com.sarrawi.mytranslate.SecondFragment"-->
 
-<!--        tools:layout="@layout/fragment_translate"/>-->
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.sarrawi.mytranslate.HistoryFragment"
@@ -17,7 +13,11 @@
     <fragment
         android:id="@+id/translateFragment"
         android:name="com.sarrawi.mytranslate.TranslateFragment"
- />
+ >
+        <action
+            android:id="@+id/action_translateFragment_to_previewFragment"
+            app:destination="@id/previewFragment" />
+    </fragment>
     <fragment
         android:id="@+id/splashScreenFragment"
         android:name="com.sarrawi.mytranslate.SplashScreenFragment"
@@ -27,8 +27,14 @@
             android:id="@+id/action_splashScreenFragment_to_translateFragment"
             app:destination="@id/translateFragment" />
     </fragment>
-    <!--    <fragment-->
-<!--        android:id="@+id/translateCameraFragment"-->
-<!--        android:name="com.sarrawi.mytranslate.TranslateCameraFragment"-->
-<!-- />-->
+    <fragment
+        android:id="@+id/previewFragment"
+        android:name="com.sarrawi.mytranslate.PreviewFragment"
+        android:label="fragment_preview"
+        tools:layout="@layout/fragment_preview" >
+    <argument
+        android:name="imageUri"
+        app:argType="string" />
+    </fragment>
+
 </navigation>

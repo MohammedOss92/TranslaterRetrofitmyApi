@@ -170,6 +170,7 @@
 
 
 
+
     <!-- زر صوت -->
     <ImageButton
         android:id="@+id/speakButton"
@@ -177,13 +178,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:backgroundTint="#4CAF50"
+
         android:contentDescription="صوت"
         android:minHeight="48dp"
         android:padding="8dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_volume"
+        android:background="@drawable/ic_volume"
+        android:src="@drawable/ic_paus"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/guideline50"
         app:layout_constraintStart_toStartOf="@id/guideline25"
