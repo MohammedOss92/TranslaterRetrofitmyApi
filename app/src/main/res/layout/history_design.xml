@@ -41,13 +41,13 @@
             android:textColor="#888888"/>
 
         <!-- زر الحذف -->
-        <Button
+        <ImageButton
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="حذف"
             android:layout_marginTop="12dp"
-            android:backgroundTint="#FF5252"
+            android:background="@drawable/ic_delete1"
             android:textColor="#FFFFFF"/>
 
     </LinearLayout>

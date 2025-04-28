@@ -8,7 +8,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.speech.tts.TextToSpeech
@@ -43,6 +45,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.util.*
 //
 class TranslateFragment : Fragment() {
@@ -61,19 +64,32 @@ class TranslateFragment : Fragment() {
         const val CAMERA_REQUEST_CODE = 1001
         const val GALLERY_REQUEST_CODE = 1002
     }
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        uri?.let {
-            // Passing URI as an argument to the PreviewFragment
-            val action = TranslateFragmentDirections.actionTranslateFragmentToPreviewFragment(it.toString())
-            findNavController().navigate(action)
-        }
-    }
+//    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+//        uri?.let {
+//            // Passing URI as an argument to the PreviewFragment
+//            val action = TranslateFragmentDirections.actionTranslateFragmentToPreviewFragment(it.toString())
+//            findNavController().navigate(action)
+//        }
+//    }
     //
 
     private lateinit var textToTranslate: String
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { processImageFromUri(it) }
+//    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+//        uri?.let { processImageFromUri(it) }
+//    }
+
+    /**/
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            processImageUri(it)
+        }
+    }
+
+    private val takePictureLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+        if (success && imageUri != null) {
+            processImageUri(imageUri!!)
+        }
     }
 
     override fun onCreateView(
@@ -340,34 +356,34 @@ class TranslateFragment : Fragment() {
         recognizeText(bitmap)
     }
 
-    private fun recognizeText(bitmap: Bitmap) {
-        val image = InputImage.fromBitmap(bitmap, 0)
-
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                binding.inputText.setText(visionText.text)
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "فشل في قراءة النص", Toast.LENGTH_SHORT).show()
-            }
-    }
+//    private fun recognizeText(bitmap: Bitmap) {
+//        val image = InputImage.fromBitmap(bitmap, 0)
+//
+//        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+//
+//        recognizer.process(image)
+//            .addOnSuccessListener { visionText ->
+//                binding.inputText.setText(visionText.text)
+//            }
+//            .addOnFailureListener {
+//                Toast.makeText(requireContext(), "فشل في قراءة النص", Toast.LENGTH_SHORT).show()
+//            }
+//    }
 
     // دالة للحصول على رمز اللغة بناءً على اسم اللغة
     private fun getLanguageCode(languageName: String): String {
         return LanguageCodes.languages.entries.firstOrNull { it.value == languageName }?.key ?: "en"
     }
 
-    private fun allPermissionsGranted(): Boolean {
-        val permissions = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        return permissions.all {
-            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
+//    private fun allPermissionsGranted(): Boolean {
+//        val permissions = arrayOf(
+//            Manifest.permission.CAMERA,
+//            Manifest.permission.READ_EXTERNAL_STORAGE
+//        )
+//        return permissions.all {
+//            ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+//        }
+//    }
 
     /////cam
 //    private fun showImageSourceDialog() {
@@ -441,13 +457,47 @@ class TranslateFragment : Fragment() {
         }
     }
 
-    private fun openCamera() {
+    private fun openCamer2a() {
         val imageFile = File.createTempFile("IMG_", ".jpg", requireContext().cacheDir)
         imageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", imageFile)
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
         startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
+    private fun openCamera() {
+        val imageFile = File.createTempFile("IMG_", ".jpg", requireContext().cacheDir)
+        imageUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", imageFile)
+        takePictureLauncher.launch(imageUri)
+    }
+
+    private fun processImageUri(uri: Uri) {
+        try {
+            val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(requireContext().contentResolver, uri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+            }
+            recognizeText(bitmap)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Toast.makeText(requireContext(), "فشل في قراءة الصورة", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun recognizeText(bitmap: Bitmap) {
+        val image = InputImage.fromBitmap(bitmap, 0)
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                binding.inputText.setText(visionText.text)
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "فشل في قراءة النص", Toast.LENGTH_SHORT).show()
+            }
     }
 
 }
