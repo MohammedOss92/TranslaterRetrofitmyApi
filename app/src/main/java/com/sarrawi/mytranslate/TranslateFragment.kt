@@ -29,14 +29,20 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.sarrawi.mytranslate.api.RetrofitClient
 import com.sarrawi.mytranslate.database.AppDatabase
 import com.sarrawi.mytranslate.databinding.FragmentTranslateBinding
+import com.sarrawi.mytranslate.db.repository.FavRepo
+import com.sarrawi.mytranslate.db.vModel.FavViewModel
+import com.sarrawi.mytranslate.db.vModel.ViewModelFactory2
+import com.sarrawi.mytranslate.model.FavModel
 import com.sarrawi.mytranslate.model.TranslateRequest
 import com.sarrawi.mytranslate.repo.TranslationRepository
 import com.sarrawi.mytranslate.util.LanguageCodes
@@ -54,9 +60,16 @@ class TranslateFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: Translate_VM
+//    private lateinit var favviewModel: FavViewModel
 
     private lateinit var tts: TextToSpeech
     private var isSpeaking = false
+
+    private val a by lazy {  FavRepo(requireActivity().application) }
+    private val favviewModel: FavViewModel by viewModels {
+        ViewModelFactory2(a)
+    }
+    var onbtnClick: ((item:FavModel,position:Int) -> Unit)? = null
 
     //cam
     private lateinit var imageUri: Uri
@@ -168,6 +181,7 @@ class TranslateFragment : Fragment() {
                     binding.speakButton.visibility = View.VISIBLE
                     binding.shareButton.visibility = View.VISIBLE
                     binding.copyButton.visibility = View.VISIBLE
+                    binding.favButton.visibility = View.VISIBLE
                 } else {
                     Toast.makeText(requireContext(), "فشل في الترجمة", Toast.LENGTH_SHORT).show()
                 }
@@ -212,29 +226,97 @@ class TranslateFragment : Fragment() {
             }
         }
 
+    var isFavorite = false // متغير لتتبع الحالة الحالية
+
+    binding.favButton.setOnClickListener {
+        val originalText = binding.inputText.text.toString()
+        val translatedText = binding.translatedText.text.toString()
+        val selectedSourceLang = binding.sourceLanguageSpinner.selectedItem.toString()
+        val selectedTargetLang = binding.targetLanguageSpinner.selectedItem.toString()
+
+        if (originalText.isNotBlank() && translatedText.isNotBlank()) {
+            // تعريف favItem قبل if-else
+            val favItem = FavModel(
+                word = originalText,
+                meaning = translatedText,
+                sourceLang = selectedSourceLang,
+                targetLang = selectedTargetLang,
+                is_fav = true
+            )
+
+            lifecycleScope.launch {
+                if (!isFavorite) {
+                    favviewModel.addFavorite(favItem)
+                    binding.favButton.setImageResource(R.drawable.is_fav)
+                    Snackbar.make(requireView(), "تمت الإضافة إلى المفضلة", Snackbar.LENGTH_SHORT).show()
+                } else {
+                    // حذف عن طريق الكلمة والمعنى فقط
+                    favviewModel.removeFavorite(favItem)
+                    binding.favButton.setImageResource(R.drawable.not_fav)
+                    Snackbar.make(requireView(), "تمت الإزالة من المفضلة", Snackbar.LENGTH_SHORT).show()
+                }
+
+                // تبديل حالة المفضلة
+                isFavorite = !isFavorite
+            }
+        } else {
+            Toast.makeText(requireContext(), "يجب أولاً ترجمة نص", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+
 
 
 
 // الاستماع لانتهاء النطق
+//    tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+//        override fun onStart(utteranceId: String?) {
+//            isSpeaking = true
+//            requireActivity().runOnUiThread {
+//                binding.speakButton.setImageResource(R.drawable.ic_paus)
+//            }
+//        }
+//
+//        override fun onDone(utteranceId: String?) {
+//            isSpeaking = false
+//            requireActivity().runOnUiThread {
+//                binding.speakButton.setImageResource(R.drawable.ic_volume)
+//            }
+//        }
+//
+//        override fun onError(utteranceId: String?) {
+//            isSpeaking = false
+//            requireActivity().runOnUiThread {
+//                binding.speakButton.setImageResource(R.drawable.ic_volume)
+//            }
+//        }
+//    })
+
+// مراقبة حالة النطق
     tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
         override fun onStart(utteranceId: String?) {
             isSpeaking = true
             requireActivity().runOnUiThread {
-                binding.speakButton.setImageResource(R.drawable.ic_paus)
+                binding.speakButton.visibility = View.GONE
+                binding.pauseIcon.visibility = View.VISIBLE
             }
         }
 
         override fun onDone(utteranceId: String?) {
             isSpeaking = false
             requireActivity().runOnUiThread {
-                binding.speakButton.setImageResource(R.drawable.ic_volume)
+                binding.speakButton.visibility = View.VISIBLE
+                binding.pauseIcon.visibility = View.GONE
             }
         }
 
         override fun onError(utteranceId: String?) {
             isSpeaking = false
             requireActivity().runOnUiThread {
-                binding.speakButton.setImageResource(R.drawable.ic_volume)
+                binding.speakButton.visibility = View.VISIBLE
+                binding.pauseIcon.visibility = View.GONE
             }
         }
     })
@@ -242,14 +324,6 @@ class TranslateFragment : Fragment() {
 
     binding.speakButton.setOnClickListener {
         val text = binding.translatedText.text.toString()
-
-        if (isSpeaking) {
-            tts.stop()
-            binding.speakButton.setImageResource(R.drawable.ic_volume)
-            isSpeaking = false
-            return@setOnClickListener
-        }
-
         if (text.isNotEmpty()) {
             val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
             val langCode = getLanguageCode(targetLangName)
@@ -263,10 +337,44 @@ class TranslateFragment : Fragment() {
 
             val params = Bundle()
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
-        } else {
-            binding.speakButton.isEnabled = false
         }
     }
+
+    binding.pauseIcon.setOnClickListener {
+        tts.stop()
+        binding.speakButton.visibility = View.VISIBLE
+        binding.pauseIcon.visibility = View.GONE
+        isSpeaking = false
+    }
+
+
+//    binding.speakButton.setOnClickListener {
+//        val text = binding.translatedText.text.toString()
+//
+//        if (isSpeaking) {
+//            tts.stop()
+//            binding.speakButton.setImageResource(R.drawable.ic_volume)
+//            isSpeaking = false
+//            return@setOnClickListener
+//        }
+//
+//        if (text.isNotEmpty()) {
+//            val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
+//            val langCode = getLanguageCode(targetLangName)
+//            val locale = Locale(langCode)
+//
+//            tts.language = if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+//                locale
+//            } else {
+//                Locale("en")
+//            }
+//
+//            val params = Bundle()
+//            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
+//        } else {
+//            binding.speakButton.isEnabled = false
+//        }
+//    }
 
 
     // إعداد النطق بناءً على اللغة المختارة
@@ -340,6 +448,7 @@ class TranslateFragment : Fragment() {
         binding.shareButton.visibility = View.GONE
         binding.copyButton.visibility = View.GONE
         binding.clearButton.visibility = View.GONE
+        binding.favButton.visibility = View.GONE
     }
 
 

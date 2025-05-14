@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-    private const val BASE_URL = "https://abdallahprojectrender.onrender.com/"  // URL الخاص بك
+    private const val BASE_URL = "http://159.223.123.196/"  // URL الخاص بك
 
     private val retrofit: Retrofit by lazy {
         val loggingInterceptor = HttpLoggingInterceptor()
