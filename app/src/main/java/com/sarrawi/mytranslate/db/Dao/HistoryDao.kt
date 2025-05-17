@@ -22,4 +22,7 @@ interface HistoryDao {
     @Delete
     suspend fun delete(history: History)
 
+    @Query("UPDATE history SET is_fav = :isFav WHERE word = :word AND meaning = :meaning")
+    suspend fun updateIsFav(word: String, meaning: String, isFav: Boolean)
+
 }

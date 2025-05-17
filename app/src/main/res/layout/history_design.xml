@@ -50,6 +50,15 @@
             android:background="@drawable/ic_delete1"
             android:textColor="#FFFFFF"/>
 
+        <ImageButton
+            android:id="@+id/favbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="حذف"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/not_fav"
+            android:textColor="#FFFFFF"/>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
 

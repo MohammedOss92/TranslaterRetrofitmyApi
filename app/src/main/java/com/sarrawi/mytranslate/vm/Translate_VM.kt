@@ -19,6 +19,11 @@ class Translate_VM(private val translationRepository: TranslationRepository): Vi
     fun deleteHistory(history: History) = viewModelScope.launch {
         translationRepository.delete(history)
     }
+    fun updateIsFav(word: String, meaning: String, isFav: Boolean) = viewModelScope.launch {
+        translationRepository.updateIsFav(word, meaning, isFav)
+    }
+
+
 
     val allHistory: LiveData<List<History>> = translationRepository.getAllHistory()
 

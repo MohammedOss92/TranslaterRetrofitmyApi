@@ -43,5 +43,10 @@
             android:id="@+id/action_previewFragment_to_translateFragment"
             app:destination="@id/translateFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/favFragment"
+        android:name="com.sarrawi.mytranslate.FavFragment"
+        android:label="fragment_fav"
+        tools:layout="@layout/fragment_fav" />
 
 </navigation>

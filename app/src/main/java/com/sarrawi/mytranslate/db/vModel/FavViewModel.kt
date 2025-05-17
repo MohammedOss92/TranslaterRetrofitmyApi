@@ -1,5 +1,6 @@
 package com.sarrawi.mytranslate.db.vModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,47 +22,42 @@ class FavViewModel(private val repository: FavRepo) : ViewModel() {
     val responseMsgsFav: MutableLiveData<List<FavModel>>
         get() = __response
 
-    init {
-        // Initialize _favoriteImages with data from the repository
-        viewModelScope.launch(Dispatchers.IO) {
-            val images = repository.getAllFav()
-            _favoriteImages.postValue(images)
-        }
-    }
+
 
     fun addFavorite(favoriteImage: FavModel) {
         println("Adding favorite image: $favoriteImage")
         viewModelScope.launch(Dispatchers.IO) {
             repository.addFavorite(favoriteImage)
-            // Update _favoriteImages after adding a new image
-            val images = repository.getAllFav()
-            _favoriteImages.postValue(images)
-            println("Favorite image added successfully.")
+
         }
     }
 
-    fun removeFavorite(favorite: FavModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.removeFavorite(favorite)
-            // Update _favoriteImages after removing an image
-            val images = repository.getAllFav()
-            _favoriteImages.postValue(images)
-        }
+
+
+    fun removeFavorite(word: String, meaning: String) = viewModelScope.launch {
+        repository.removeFavorite(word, meaning)
     }
 
-    fun updateImages() {
+    fun update_fav(id: Int,state:Boolean) = viewModelScope.launch {
+        repository.update_fav(id,state)
+    }
+
+
+
+
+    fun getFav(): LiveData<List<FavModel>> {
+        Log.e("tessst","entred22")
+//        viewModelScope.launch {
+//          __response.postValue(msgsRepo.getAllFav())
+//        }
+        return repository.getAllFav()
+    }
+
+    fun isFavorite(word: String, meaning: String, callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val images = repository.getAllFav()
-            println("Favorite images from the database: $images")
-            _favoriteImages.postValue(images)
+            val result = repository.isFavorite(word, meaning)
+            callback(result)
         }
     }
 
-    fun getAllFavoriteImages() {
-        viewModelScope.launch {
-            val images = repository.getAllFav()
-            println("Favorite images from the database: $images")
-            _favoriteImages.postValue(images)
-        }
-    }
 }

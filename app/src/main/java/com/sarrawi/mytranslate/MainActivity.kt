@@ -36,14 +36,14 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        appBarConfiguration = AppBarConfiguration.Builder(R.id.translateFragment, R.id.historyFragment,R.id.splashScreenFragment)
+        appBarConfiguration = AppBarConfiguration.Builder(R.id.translateFragment, R.id.historyFragment,R.id.splashScreenFragment,R.id.favFragment)
              // إذا كنت تستخدم درج التنقل
             .build()
         setupActionBarWithNavController(navController, appBarConfiguration)
 
 
 //        val options = listOf("Translate", "History","Camera")
-        val options = listOf("Translate", "History")
+        val options = listOf("Translate", "History","Favorite")
 //        val options = listOf(
 //            Pair(R.drawable.ic_clear, "Home"),
 //            Pair(R.drawable.ic_clear, "Favorites"),
@@ -73,6 +73,7 @@ class MainActivity : AppCompatActivity() {
                 when (position) {
                     0 -> navController.navigate(R.id.translateFragment)
                     1 -> navController.navigate(R.id.historyFragment)
+                    2 -> navController.navigate(R.id.favFragment)
                     //2 -> navController.navigate(R.id.translateCameraFragment)
                 }
             }

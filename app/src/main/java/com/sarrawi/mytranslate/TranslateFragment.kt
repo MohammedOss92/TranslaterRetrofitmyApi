@@ -69,7 +69,6 @@ class TranslateFragment : Fragment() {
     private val favviewModel: FavViewModel by viewModels {
         ViewModelFactory2(a)
     }
-    var onbtnClick: ((item:FavModel,position:Int) -> Unit)? = null
 
     //cam
     private lateinit var imageUri: Uri
@@ -251,7 +250,7 @@ class TranslateFragment : Fragment() {
                     Snackbar.make(requireView(), "تمت الإضافة إلى المفضلة", Snackbar.LENGTH_SHORT).show()
                 } else {
                     // حذف عن طريق الكلمة والمعنى فقط
-                    favviewModel.removeFavorite(favItem)
+                    favviewModel.removeFavorite(originalText,translatedText)
                     binding.favButton.setImageResource(R.drawable.not_fav)
                     Snackbar.make(requireView(), "تمت الإزالة من المفضلة", Snackbar.LENGTH_SHORT).show()
                 }

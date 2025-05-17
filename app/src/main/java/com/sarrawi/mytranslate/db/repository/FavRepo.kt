@@ -15,16 +15,30 @@ class FavRepo(app: Application) {
         favoriteImageDao = database.favDao()
     }
 
-    fun getAllFav(): List<FavModel> {
-        return favoriteImageDao.getAllFavoritea()
-
+    fun getAllFav(): LiveData<List<FavModel>> {
+        return favoriteImageDao.getAllFavoriteas()
     }
+
+
+
 
     suspend fun addFavorite(favoriteImage: FavModel) {
         favoriteImageDao.add_fav(favoriteImage)
     }
 
-    suspend fun removeFavorite(favoriteImage: FavModel) {
-        favoriteImageDao.deletefav(favoriteImage)
+    suspend fun removeFavorite(word: String, meaning: String)  {
+        favoriteImageDao.deleteByText(word, meaning)
     }
+
+    suspend fun update_fav(id: Int,state:Boolean) {
+
+        favoriteImageDao.update_favs(id,state)
+    }
+
+    suspend fun isFavorite(word: String, meaning: String): Boolean {
+        return favoriteImageDao.isFavorite(word, meaning) != null
+    }
+
+
+
 }

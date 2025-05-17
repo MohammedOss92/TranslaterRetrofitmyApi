@@ -6,12 +6,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sarrawi.mytranslate.R
 import com.sarrawi.mytranslate.databinding.HistoryDesignBinding
 import com.sarrawi.mytranslate.model.History
 
 class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.HistoryViewHolder>(DiffCallback()) {
 
     var onClick: ((History, Int) -> Unit)? = null
+    var onItemClick: ((item:History,position:Int) -> Unit)? = null
 
     inner class HistoryViewHolder(private val binding: HistoryDesignBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -26,6 +28,21 @@ class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.His
                 onClick?.invoke(item, adapterPosition)
                 notifyDataSetChanged()
                 notifyItemChanged(adapterPosition)
+            }
+
+
+
+            binding.favbtn.setOnClickListener {
+
+                onItemClick?.invoke(item, adapterPosition)
+                notifyItemChanged(adapterPosition)
+            }
+
+            if (item.is_fav) {
+                binding.favbtn.setImageResource(R.drawable.is_fav)
+
+            } else {
+                binding.favbtn.setImageResource(R.drawable.not_fav)
             }
         }
     }

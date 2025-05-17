@@ -70,6 +70,13 @@ class TranslationRepository(private val apiService: ApiService, private val hist
         historyDao.delete(history)
     }
 
+    suspend fun updateIsFav(word: String, meaning: String, isFav: Boolean) {
+        historyDao.updateIsFav(word, meaning, isFav)
+    }
+
+
+
+
 
 //    fun translateTextReasponse(request: TranslateRequest): TranslateResponse? {
 //        return try {

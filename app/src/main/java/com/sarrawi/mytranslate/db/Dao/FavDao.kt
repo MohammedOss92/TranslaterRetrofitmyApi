@@ -20,5 +20,11 @@ interface FavDao {
     suspend fun update_favs(ID:Int,state:Boolean)
 
     @Query("select * from fav_table order by id desc ")
-    fun getAllFavoritea(): List<FavModel>
+    fun getAllFavoriteas(): LiveData<List<FavModel>>
+
+    @Query("SELECT * FROM fav_table WHERE word = :word AND meaning = :meaning LIMIT 1")
+    suspend fun isFavorite(word: String, meaning: String): FavModel?
+
+
+
 }
