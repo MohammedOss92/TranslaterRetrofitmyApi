@@ -25,3 +25,43 @@
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+<!--    <?xml version="1.0" encoding="utf-8"?>-->
+<!--<androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"-->
+<!--tools:context=".MainActivity">-->
+
+<!--&lt;!&ndash; شريط الأدوات &ndash;&gt;-->
+<!--<com.google.android.material.appbar.AppBarLayout-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">-->
+
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="?attr/actionBarSize"-->
+<!--        android:background="?attr/colorPrimary"-->
+<!--        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">-->
+
+<!--        &lt;!&ndash; Spinner داخل Toolbar &ndash;&gt;-->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner_fragment"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:spinnerMode="dropdown"-->
+<!--            android:paddingHorizontal="16dp"-->
+<!--            android:background="@android:drawable/btn_dropdown" />-->
+<!--    </androidx.appcompat.widget.Toolbar>-->
+
+<!--</com.google.android.material.appbar.AppBarLayout>-->
+
+<!--&lt;!&ndash; إدراج المحتوى من ملف خارجي &ndash;&gt;-->
+<!--<include layout="@layout/content_main" />-->
+
+<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->
