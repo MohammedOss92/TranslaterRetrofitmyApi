@@ -17,7 +17,9 @@ tools:context=".MainActivity">
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+
+        android:background="#1E88E5"
+
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <!-- Spinner داخل Toolbar -->
@@ -28,7 +30,7 @@ tools:context=".MainActivity">
             android:layout_gravity="end"
             android:spinnerMode="dropdown"
             android:paddingHorizontal="16dp"
-            android:background="@drawable/spinner"
+            app:popupTheme="@style/Theme.MyTranslate.PopupOverlay"
 
             />
     </androidx.appcompat.widget.Toolbar>

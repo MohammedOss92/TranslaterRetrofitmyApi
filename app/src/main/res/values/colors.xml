@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primaryColor">#1E88E5</color> <!-- أزرق سماوي قوي -->
+    <color name="primaryDarkColor">#1565C0</color> <!-- أزرق داكن -->
+    <color name="accentColor">#FFB300</color> <!-- أصفر ذهبي (كناري) -->
+
+    <color name="backgroundColor">#121212</color> <!-- خلفية داكنة -->
+    <color name="textColorPrimary">#E0E0E0</color> <!-- نص فاتح -->
+
+
+
 </resources>
