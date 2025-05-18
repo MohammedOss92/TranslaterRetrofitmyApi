@@ -40,7 +40,16 @@ class MainActivity : AppCompatActivity() {
              // إذا كنت تستخدم درج التنقل
             .build()
         setupActionBarWithNavController(navController, appBarConfiguration)
-
+        // هنا نراقب تغيير الـ Fragment الحالي لنقرر إظهار أو إخفاء الـ Toolbar
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.splashScreenFragment) {
+                // إذا نحن في SplashScreenFragment، نخفي الـ Toolbar
+                supportActionBar?.hide()
+            } else {
+                // في أي شاشة أخرى نعرض الـ Toolbar
+                supportActionBar?.show()
+            }
+        }
 
 //        val options = listOf("Translate", "History","Camera")
         val options = listOf("Translate", "History","Favorite")

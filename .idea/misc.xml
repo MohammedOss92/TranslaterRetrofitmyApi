@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/drawable-anydpi/ic_paus.xml" value="0.138" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/drawable/aa.xml" value="0.138" />
+        <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/drawable/spinner.xml" value="0.1165" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/layout/aa.xml" value="0.24010416666666667" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/layout/activity_main.xml" value="0.22146739130434784" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/layout/content_main.xml" value="0.25" />
@@ -22,6 +23,7 @@
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/layout/ss.xml" value="0.2390625" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/menu/menu_main.xml" value="0.24010416666666667" />
         <entry key="..\:/Users/Abdallah/AndroidStudioProjects/MyTranslate/app/src/main/res/xml/file_paths.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/Abdallah/AppData/Local/Android/Sdk/platforms/android-34/data/res/layout/simple_spinner_item.xml" value="0.10520833333333333" />
       </map>
     </option>
   </component>

@@ -66,6 +66,22 @@ class HistoryFragment : Fragment() {
 
             favviewModel.getFav().observe(viewLifecycleOwner) { favs ->
 
+                //متى تستخدم any:
+                //تستخدم any عندما تريد أن تتحقق:
+                //
+                //هل يوجد عنصر واحد على الأقل داخل قائمة يحقق شرط معين؟
+
+                // متى لا تستخدم any:
+                //إذا كنت تريد كل العناصر تحقق شرط → استخدم all.
+                //
+                //إذا كنت تريد عنصر واحد محدد → استخدم find أو firstOrNull.
+                //
+                //إذا كنت تريد فقط عدد العناصر → استخدم count.
+                //الدالة	وظيفتها
+                //any	يرجع true إذا أي عنصر يحقق الشرط.
+                //all	يرجع true إذا كل العناصر تحقق الشرط.
+                //none	يرجع true إذا ولا عنصر يحقق الشرط.
+                //find	يرجع أول عنصر يحقق الشرط أو null إذا ما وجد.
                 val updatedList = historyList.map { historyItem ->
                     val isFav = favs.any { it.word == historyItem.word && it.meaning == historyItem.meaning }
                     historyItem.copy(is_fav = isFav)
