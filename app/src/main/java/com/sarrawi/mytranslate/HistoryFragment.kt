@@ -63,6 +63,17 @@ class HistoryFragment : Fragment() {
             this.adapter = this@HistoryFragment.adapter
         }
         viewModel.allHistory.observe(viewLifecycleOwner) { historyList ->
+
+            favviewModel.getFav().observe(viewLifecycleOwner) { favs ->
+
+                val updatedList = historyList.map { historyItem ->
+                    val isFav = favs.any { it.word == historyItem.word && it.meaning == historyItem.meaning }
+                    historyItem.copy(is_fav = isFav)
+                }
+
+                adapter.favoriteList = favs
+                adapter.submitList(updatedList)
+            }
             adapter.submitList(historyList) // تأكد إنك تستخدم AsyncListDiffer أو ListAdapter
         }
 

@@ -8,12 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sarrawi.mytranslate.R
 import com.sarrawi.mytranslate.databinding.HistoryDesignBinding
+import com.sarrawi.mytranslate.model.FavModel
 import com.sarrawi.mytranslate.model.History
 
 class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.HistoryViewHolder>(DiffCallback()) {
 
     var onClick: ((History, Int) -> Unit)? = null
     var onItemClick: ((item:History,position:Int) -> Unit)? = null
+    var favoriteList: List<FavModel> = listOf()
+
 
     inner class HistoryViewHolder(private val binding: HistoryDesignBinding) :
         RecyclerView.ViewHolder(binding.root) {
