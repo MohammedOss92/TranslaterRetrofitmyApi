@@ -699,7 +699,7 @@ class TranslateFragment : Fragment() {
             // do nothing on initialization complete
         }
         val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest,
+        InterstitialAd.load(requireContext(), "ca-app-pub-1895204889916566/8094554348", adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
                     mInterstitialAd = interstitialAd
