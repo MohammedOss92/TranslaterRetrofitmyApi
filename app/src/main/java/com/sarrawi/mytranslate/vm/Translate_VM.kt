@@ -26,6 +26,9 @@ class Translate_VM(private val translationRepository: TranslationRepository): Vi
 
 
     val allHistory: LiveData<List<History>> = translationRepository.getAllHistory()
+    fun search(query: String): LiveData<List<History>> {
+        return translationRepository.searchHistory(query)
+    }
 
     fun translate_vm22(request: TranslateRequest, onResult: (TranslateResponse?) -> Unit) {
         Log.d("Translate", "Starting translation for: $request")

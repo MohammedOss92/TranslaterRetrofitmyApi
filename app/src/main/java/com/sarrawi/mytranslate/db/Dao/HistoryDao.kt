@@ -25,4 +25,13 @@ interface HistoryDao {
     @Query("UPDATE history SET is_fav = :isFav WHERE word = :word AND meaning = :meaning")
     suspend fun updateIsFav(word: String, meaning: String, isFav: Boolean)
 
+    @Query("""
+    SELECT * FROM history
+    WHERE word LIKE '%' || :query || '%'
+       OR meaning LIKE '%' || :query || '%'
+    ORDER BY id DESC
+""")
+    fun searchHistory(query: String): LiveData<List<History>>
+
+
 }

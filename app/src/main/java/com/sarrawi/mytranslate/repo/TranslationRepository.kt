@@ -65,6 +65,9 @@ class TranslationRepository(private val apiService: ApiService, private val hist
 
 
     fun getAllHistory(): LiveData<List<History>> = historyDao.getAllHistory()
+    fun searchHistory(query: String): LiveData<List<History>> {
+        return historyDao.searchHistory(query)
+    }
 
     suspend fun delete(history: History) {
         historyDao.delete(history)

@@ -16,6 +16,7 @@ class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.His
     var onClick: ((History, Int) -> Unit)? = null
     var onItemClick: ((item:History,position:Int) -> Unit)? = null
     var favoriteList: List<FavModel> = listOf()
+    var historyList: List<History> = listOf()
 
 
     inner class HistoryViewHolder(private val binding: HistoryDesignBinding) :
@@ -62,5 +63,10 @@ class AdapterHistory(val con: Context) : ListAdapter<History, AdapterHistory.His
 
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    fun setLetters(historyList:List<History>){
+        this.historyList = historyList
+        notifyDataSetChanged()
     }
 }

@@ -17,6 +17,7 @@ import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.snackbar.Snackbar
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
@@ -69,6 +73,8 @@ class TranslateFragment : Fragment() {
     private val favviewModel: FavViewModel by viewModels {
         ViewModelFactory2(a)
     }
+    private var clickCount = 0
+    private var mInterstitialAd: InterstitialAd? = null
 
     //cam
     private lateinit var imageUri: Uri
@@ -115,6 +121,7 @@ class TranslateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    loadInterstitialAd()
     textToTranslate = arguments?.getString("textToTranslate") ?: ""
 
     // ضع النص داخل EditText
@@ -152,7 +159,8 @@ class TranslateFragment : Fragment() {
         binding.targetLanguageSpinner.setSelection(languageNames.indexOf("Arabic"))
 
         // زر الترجمة
-        binding.translateButton.setOnClickListener {
+    binding.translateButton.setOnClickListener {
+        showAdEvery3Clicks  {
             val sourceLangName = binding.sourceLanguageSpinner.selectedItem.toString()
             val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
 
@@ -162,7 +170,7 @@ class TranslateFragment : Fragment() {
 
             if (text.isBlank()) {
                 Toast.makeText(requireContext(), "اكتب النص أولًا", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                return@showAdEvery3Clicks
             }
 
             val request = TranslateRequest(
@@ -173,8 +181,6 @@ class TranslateFragment : Fragment() {
 
             viewModel.translate_vm2(request) { result ->
                 if (result != null) {
-
-
                     binding.translatedText.setText(result.translated_text)
                     binding.translatedText.visibility = View.VISIBLE
                     binding.speakButton.visibility = View.VISIBLE
@@ -185,12 +191,13 @@ class TranslateFragment : Fragment() {
                     Toast.makeText(requireContext(), "فشل في الترجمة", Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
+    }
 
-        binding.inputText.addTextChangedListener(object : TextWatcher {
+    binding.inputText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 binding.clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                binding.speakButtoninput.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
                 binding.translateButton.isEnabled = true
             }
 
@@ -200,9 +207,11 @@ class TranslateFragment : Fragment() {
 
         // زر النسخ
         binding.copyButton.setOnClickListener {
+            showAdEvery3Clicks  {
             val textToCopy = binding.translatedText.text.toString()
             if (textToCopy.isNotEmpty()) {
-                val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clipboard =
+                    requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 val clip = ClipData.newPlainText("translated text", textToCopy)
                 clipboard.setPrimaryClip(clip)
                 Toast.makeText(requireContext(), "تم نسخ الترجمة", Toast.LENGTH_SHORT).show()
@@ -210,56 +219,70 @@ class TranslateFragment : Fragment() {
                 Toast.makeText(requireContext(), "لا يوجد نص لنسخه", Toast.LENGTH_SHORT).show()
             }
         }
+        }
 
         binding.shareButton.setOnClickListener {
-            val textToShare = binding.translatedText.text.toString()
-            if (textToShare.isNotEmpty()) {
-                val shareIntent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, textToShare)
-                    type = "text/plain"
+            showAdEvery3Clicks  {
+                val textToShare = binding.translatedText.text.toString()
+                if (textToShare.isNotEmpty()) {
+                    val shareIntent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, textToShare)
+                        type = "text/plain"
+                    }
+                    startActivity(Intent.createChooser(shareIntent, "مشاركة الترجمة عبر"))
+                } else {
+                    Toast.makeText(requireContext(), "لا يوجد نص لمشاركته", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                startActivity(Intent.createChooser(shareIntent, "مشاركة الترجمة عبر"))
-            } else {
-                Toast.makeText(requireContext(), "لا يوجد نص لمشاركته", Toast.LENGTH_SHORT).show()
             }
         }
 
     var isFavorite = false // متغير لتتبع الحالة الحالية
 
     binding.favButton.setOnClickListener {
-        val originalText = binding.inputText.text.toString()
-        val translatedText = binding.translatedText.text.toString()
-        val selectedSourceLang = binding.sourceLanguageSpinner.selectedItem.toString()
-        val selectedTargetLang = binding.targetLanguageSpinner.selectedItem.toString()
+        showAdEvery3Clicks  {
+            val originalText = binding.inputText.text.toString()
+            val translatedText = binding.translatedText.text.toString()
+            val selectedSourceLang = binding.sourceLanguageSpinner.selectedItem.toString()
+            val selectedTargetLang = binding.targetLanguageSpinner.selectedItem.toString()
 
-        if (originalText.isNotBlank() && translatedText.isNotBlank()) {
-            // تعريف favItem قبل if-else
-            val favItem = FavModel(
-                word = originalText,
-                meaning = translatedText,
-                sourceLang = selectedSourceLang,
-                targetLang = selectedTargetLang,
-                is_fav = true
-            )
+            if (originalText.isNotBlank() && translatedText.isNotBlank()) {
+                // تعريف favItem قبل if-else
+                val favItem = FavModel(
+                    word = originalText,
+                    meaning = translatedText,
+                    sourceLang = selectedSourceLang,
+                    targetLang = selectedTargetLang,
+                    is_fav = true
+                )
 
-            lifecycleScope.launch {
-                if (!isFavorite) {
-                    favviewModel.addFavorite(favItem)
-                    binding.favButton.setImageResource(R.drawable.is_fav)
-                    Snackbar.make(requireView(), "تمت الإضافة إلى المفضلة", Snackbar.LENGTH_SHORT).show()
-                } else {
-                    // حذف عن طريق الكلمة والمعنى فقط
-                    favviewModel.removeFavorite(originalText,translatedText)
-                    binding.favButton.setImageResource(R.drawable.not_fav)
-                    Snackbar.make(requireView(), "تمت الإزالة من المفضلة", Snackbar.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    if (!isFavorite) {
+                        favviewModel.addFavorite(favItem)
+                        binding.favButton.setImageResource(R.drawable.is_fav)
+                        Snackbar.make(
+                            requireView(),
+                            "تمت الإضافة إلى المفضلة",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        // حذف عن طريق الكلمة والمعنى فقط
+                        favviewModel.removeFavorite(originalText, translatedText)
+                        binding.favButton.setImageResource(R.drawable.not_fav)
+                        Snackbar.make(
+                            requireView(),
+                            "تمت الإزالة من المفضلة",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    // تبديل حالة المفضلة
+                    isFavorite = !isFavorite
                 }
-
-                // تبديل حالة المفضلة
-                isFavorite = !isFavorite
+            } else {
+                Toast.makeText(requireContext(), "يجب أولاً ترجمة نص", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(requireContext(), "يجب أولاً ترجمة نص", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -300,6 +323,9 @@ class TranslateFragment : Fragment() {
             requireActivity().runOnUiThread {
                 binding.speakButton.visibility = View.GONE
                 binding.pauseIcon.visibility = View.VISIBLE
+
+                binding.speakButtoninput.visibility = View.GONE
+                binding.pauseIconinput.visibility = View.VISIBLE
             }
         }
 
@@ -308,6 +334,9 @@ class TranslateFragment : Fragment() {
             requireActivity().runOnUiThread {
                 binding.speakButton.visibility = View.VISIBLE
                 binding.pauseIcon.visibility = View.GONE
+
+                binding.speakButtoninput.visibility = View.VISIBLE
+                binding.pauseIconinput.visibility = View.GONE
             }
         }
 
@@ -316,34 +345,70 @@ class TranslateFragment : Fragment() {
             requireActivity().runOnUiThread {
                 binding.speakButton.visibility = View.VISIBLE
                 binding.pauseIcon.visibility = View.GONE
+
+                binding.speakButtoninput.visibility = View.VISIBLE
+                binding.pauseIconinput.visibility = View.GONE
             }
         }
     })
 
 
     binding.speakButton.setOnClickListener {
-        val text = binding.translatedText.text.toString()
-        if (text.isNotEmpty()) {
-            val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
-            val langCode = getLanguageCode(targetLangName)
-            val locale = Locale(langCode)
+        showAdEvery3Clicks  {
+            val text = binding.translatedText.text.toString()
+            if (text.isNotEmpty()) {
+                val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
+                val langCode = getLanguageCode(targetLangName)
+                val locale = Locale(langCode)
 
-            tts.language = if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
-                locale
-            } else {
-                Locale("en")
+                tts.language = if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+                    locale
+                } else {
+                    Locale("en")
+                }
+
+                val params = Bundle()
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
             }
+        }
+    }
 
-            val params = Bundle()
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
+    binding.speakButtoninput.setOnClickListener {
+        showAdEvery3Clicks  {
+            val text = binding.inputText.text.toString()
+            if (text.isNotEmpty()) {
+                val targetLangName = binding.targetLanguageSpinner.selectedItem.toString()
+                val langCode = getLanguageCode(targetLangName)
+                val locale = Locale(langCode)
+
+                tts.language = if (tts.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE) {
+                    locale
+                } else {
+                    Locale("en")
+                }
+
+                val params = Bundle()
+                tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "TTS_ID")
+            }
         }
     }
 
     binding.pauseIcon.setOnClickListener {
-        tts.stop()
-        binding.speakButton.visibility = View.VISIBLE
-        binding.pauseIcon.visibility = View.GONE
-        isSpeaking = false
+        showAdEvery3Clicks  {
+            tts.stop()
+            binding.speakButton.visibility = View.VISIBLE
+            binding.pauseIcon.visibility = View.GONE
+            isSpeaking = false
+        }
+    }
+
+    binding.pauseIconinput.setOnClickListener {
+        showAdEvery3Clicks  {
+            tts.stop()
+            binding.speakButtoninput.visibility = View.VISIBLE
+            binding.pauseIconinput.visibility = View.GONE
+            isSpeaking = false
+        }
     }
 
 
@@ -398,16 +463,19 @@ class TranslateFragment : Fragment() {
         val swapAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate)
 
         binding.swapLanguagesButton.setOnClickListener {
-            it.startAnimation(swapAnimation)
+            showAdEvery3Clicks  {
+                it.startAnimation(swapAnimation)
 
-            val sourcePosition = binding.sourceLanguageSpinner.selectedItemPosition
-            val targetPosition = binding.targetLanguageSpinner.selectedItemPosition
+                val sourcePosition = binding.sourceLanguageSpinner.selectedItemPosition
+                val targetPosition = binding.targetLanguageSpinner.selectedItemPosition
 
-            binding.sourceLanguageSpinner.setSelection(targetPosition)
-            binding.targetLanguageSpinner.setSelection(sourcePosition)
+                binding.sourceLanguageSpinner.setSelection(targetPosition)
+                binding.targetLanguageSpinner.setSelection(sourcePosition)
+            }
         }
 
-        binding.pasteButton.setOnClickListener {
+    binding.pasteButton.setOnClickListener {
+        showAdEvery3Clicks {
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = clipboard.primaryClip
             if (clipData != null && clipData.itemCount > 0) {
@@ -418,6 +486,7 @@ class TranslateFragment : Fragment() {
                 Toast.makeText(requireContext(), "لا يوجد نص في الحافظة", Toast.LENGTH_SHORT).show()
             }
         }
+    }
 
 //    binding.camButton.setOnClickListener {
 //
@@ -439,16 +508,22 @@ class TranslateFragment : Fragment() {
 
 
     binding.clearButton.setOnClickListener {
-        binding.inputText.text.clear()
-        binding.translatedText.text.clear()
+        showAdEvery3Clicks {
+            // تنفيذ الترجمة هنا
 
-        binding.translatedText.visibility = View.GONE
-        binding.speakButton.visibility = View.GONE
-        binding.shareButton.visibility = View.GONE
-        binding.copyButton.visibility = View.GONE
-        binding.clearButton.visibility = View.GONE
-        binding.favButton.visibility = View.GONE
+            binding.inputText.text.clear()
+            binding.translatedText.text.clear()
+
+            binding.translatedText.visibility = View.GONE
+            binding.speakButton.visibility = View.GONE
+            binding.shareButton.visibility = View.GONE
+            binding.copyButton.visibility = View.GONE
+            binding.clearButton.visibility = View.GONE
+            binding.favButton.visibility = View.GONE
+        }
     }
+
+
 
 
 }
@@ -607,6 +682,66 @@ class TranslateFragment : Fragment() {
                 Toast.makeText(requireContext(), "فشل في قراءة النص", Toast.LENGTH_SHORT).show()
             }
     }
+
+
+    private fun showAdEvery3Clicks(action: () -> Unit) {
+        clickCount++
+        if (clickCount % 3 == 0) {
+            showAdThen(action)
+        } else {
+            action()
+        }
+    }
+
+
+    private fun loadInterstitialAd() {
+        MobileAds.initialize(requireActivity()) { initializationStatus ->
+            // do nothing on initialization complete
+        }
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(requireContext(), "ca-app-pub-3940256099942544/1033173712", adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    mInterstitialAd = interstitialAd
+                    Log.i("onAdLoadedL", "onAdLoaded")
+                }
+
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    mInterstitialAd = null
+                    Log.d("onAdLoadedF", adError.toString())
+
+                }
+            })
+    }
+
+
+    private fun showAdThen(action: () -> Unit) {
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    mInterstitialAd = null
+                    loadInterstitialAd()
+                    action()
+                    Log.i("onAdLoadedL", "onAdLoaded")
+                }
+
+                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                    mInterstitialAd = null
+                    action()
+
+                }
+
+                override fun onAdShowedFullScreenContent() {
+                    mInterstitialAd = null
+                }
+            }
+            mInterstitialAd?.show(requireActivity())
+        } else {
+            action()
+        }
+    }
+
+
 
 }
 

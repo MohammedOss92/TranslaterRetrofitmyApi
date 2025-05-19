@@ -1,6 +1,7 @@
 package com.sarrawi.mytranslate
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -13,6 +14,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import com.google.android.gms.ads.MobileAds
 import com.sarrawi.mytranslate.adapter.SpinnerAdapter
 import com.sarrawi.mytranslate.databinding.ActivityMainBinding
 import com.sarrawi.mytranslate.model.Item
@@ -29,6 +31,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
+
+        MobileAds.initialize(this) { initializationStatus ->
+            // يمكن إضافة لوج لو حبيت
+            Log.d("Ads", "Initialization complete: $initializationStatus")
+        }
 
 // إخفاء اسم التطبيق من الـ Toolbar
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -90,6 +97,9 @@ class MainActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
         spinnerFragment.adapter = adapter
+
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
