@@ -56,10 +56,17 @@ class MainActivity : AppCompatActivity() {
                 // في أي شاشة أخرى نعرض الـ Toolbar
                 supportActionBar?.show()
             }
+
+            val spinner = findViewById<Spinner>(R.id.spinner_fragment)
+            when (destination.id) {
+                R.id.translateFragment -> spinner.setSelection(0)
+                R.id.historyFragment -> spinner.setSelection(1)
+                R.id.favFragment -> spinner.setSelection(2)
+            }
         }
 
 //        val options = listOf("Translate", "History","Camera")
-        val options = listOf("Translate", "History","Favorite")
+        val options = listOf("Home", "History","Favorite")
 //        val options = listOf(
 //            Pair(R.drawable.ic_clear, "Home"),
 //            Pair(R.drawable.ic_clear, "Favorites"),

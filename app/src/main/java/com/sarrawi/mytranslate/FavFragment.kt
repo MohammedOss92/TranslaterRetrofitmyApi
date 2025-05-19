@@ -1,6 +1,8 @@
 package com.sarrawi.mytranslate
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +49,19 @@ class FavFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRv()
+        binding.etsearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString()
+                favviewModel.search(query).observe(viewLifecycleOwner) {
+                    favAdapter.trans_fav_list=it
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
     }
 
         private fun setUpRv() = favviewModel.viewModelScope.launch {

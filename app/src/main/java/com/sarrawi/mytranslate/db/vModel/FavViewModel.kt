@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sarrawi.mytranslate.db.repository.FavRepo
 import com.sarrawi.mytranslate.model.FavModel
+import com.sarrawi.mytranslate.model.History
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -58,6 +59,10 @@ class FavViewModel(private val repository: FavRepo) : ViewModel() {
             val result = repository.isFavorite(word, meaning)
             callback(result)
         }
+    }
+
+    fun search(query: String): LiveData<List<FavModel>> {
+        return repository.searchFav(query)
     }
 
 }

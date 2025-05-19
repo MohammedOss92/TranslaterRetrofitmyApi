@@ -3,6 +3,8 @@ package com.sarrawi.mytranslate.db.Dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.sarrawi.mytranslate.model.FavModel
+import com.sarrawi.mytranslate.model.History
+
 @Dao
 interface FavDao {
 
@@ -24,6 +26,14 @@ interface FavDao {
 
     @Query("SELECT * FROM fav_table WHERE word = :word AND meaning = :meaning LIMIT 1")
     suspend fun isFavorite(word: String, meaning: String): FavModel?
+
+    @Query("""
+    SELECT * FROM fav_table
+    WHERE word LIKE '%' || :query || '%'
+       OR meaning LIKE '%' || :query || '%'
+    ORDER BY id DESC
+""")
+    fun searchFav(query: String): LiveData<List<FavModel>>
 
 
 

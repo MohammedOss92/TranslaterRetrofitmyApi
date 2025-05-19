@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.sarrawi.mytranslate.database.AppDatabase
 import com.sarrawi.mytranslate.db.Dao.FavDao
 import com.sarrawi.mytranslate.model.FavModel
+import com.sarrawi.mytranslate.model.History
 
 class FavRepo(app: Application) {
 
@@ -37,6 +38,10 @@ class FavRepo(app: Application) {
 
     suspend fun isFavorite(word: String, meaning: String): Boolean {
         return favoriteImageDao.isFavorite(word, meaning) != null
+    }
+
+    fun searchFav(query: String): LiveData<List<FavModel>> {
+        return favoriteImageDao.searchFav(query)
     }
 
 
