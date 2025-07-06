@@ -683,6 +683,16 @@ class TranslateFragment : Fragment() {
             }
     }
 
+//    buttonIncrement.setOnClickListener {
+//        count++
+//        textView.text = "عدد الضغطات: $count"
+//    }
+//
+//    buttonReset.setOnClickListener {
+//        count = 0  // إعادة العد للصفر
+//        textView.text = "عدد الضغطات: $count"
+//    }
+    
 
     private fun showAdEvery3Clicks(action: () -> Unit) {
         clickCount++
@@ -715,6 +725,11 @@ class TranslateFragment : Fragment() {
     }
 
 
+//    () → قائمة المعطيات (Parameters) للدالة هنا فارغة، أي لا تأخذ أي باراميتر.
+//
+//-> → السهم الذي يفصل بين قائمة المعطيات ونوع الإرجاع.
+//
+//Unit → نوع القيمة التي تُرجعها الدالة (أي لا تُرجع شيء مهم، مثل void في لغات أخرى).
     private fun showAdThen(action: () -> Unit) {
         if (mInterstitialAd != null) {
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
