@@ -696,7 +696,7 @@ class TranslateFragment : Fragment() {
 
     private fun showAdEvery3Clicks(action: () -> Unit) {
         clickCount++
-        if (clickCount % 3 == 0) {
+        if (clickCount % 5 == 0) {
             showAdThen(action)
         } else {
             action()
