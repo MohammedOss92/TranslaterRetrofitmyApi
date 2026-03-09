@@ -8,7 +8,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.google.mlkit.vision.text.Text
+
 
 class TextOverlayView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
@@ -21,13 +21,13 @@ class TextOverlayView(context: Context, attrs: AttributeSet) : View(context, att
     private val textBlocks = mutableListOf<Pair<Rect, String>>()
     private var onTextClickListener: ((String) -> Unit)? = null
 
-    fun setBlocks(blocks: List<Text.TextBlock>) {
-        textBlocks.clear()
-        for (block in blocks) {
-            block.boundingBox?.let { textBlocks.add(it to block.text) }
-        }
-        invalidate()
-    }
+//    fun setBlocks(blocks: List<Text.TextBlock>) {
+//        textBlocks.clear()
+//        for (block in blocks) {
+//            block.boundingBox?.let { textBlocks.add(it to block.text) }
+//        }
+//        invalidate()
+//    }
 
     fun setOnTextClickListener(listener: (String) -> Unit) {
         onTextClickListener = listener
