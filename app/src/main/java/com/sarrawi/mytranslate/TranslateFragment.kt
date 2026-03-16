@@ -705,6 +705,13 @@ class TranslateFragment : Fragment() {
 
 
     private fun loadInterstitialAd() {
+        // إعداد AdMob للكبار فقط
+        val requestConfiguration = RequestConfiguration.Builder()
+            .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE)
+            .setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE)
+            .build()
+        MobileAds.setRequestConfiguration(requestConfiguration)
+
         MobileAds.initialize(requireActivity()) { initializationStatus ->
             // do nothing on initialization complete
         }
